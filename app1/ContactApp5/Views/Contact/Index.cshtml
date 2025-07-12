@@ -1,0 +1,240 @@
+﻿@model List<Contact>
+@{
+    ViewData["Title"] = "Contact App";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .header {
+        text-align: center;
+        margin-bottom: 40px;
+        color: white;
+    }
+    
+    .header h1 {
+        font-size: 3rem;
+        font-weight: 300;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+    
+    .card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        padding: 30px;
+        margin-bottom: 30px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    }
+    
+    .card h2 {
+        color: #333;
+        margin-bottom: 25px;
+        font-weight: 600;
+        border-bottom: 3px solid #667eea;
+        padding-bottom: 10px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #555;
+        font-size: 0.95rem;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    
+    .table thead th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+        border-radius: 8px 8px 0 0;
+    }
+    
+    .table tbody tr {
+        background: white;
+        transition: background-color 0.3s ease;
+    }
+    
+    .table tbody tr:nth-child(even) {
+        background: #f8f9fa;
+    }
+    
+    .table tbody tr:hover {
+        background: #e3f2fd;
+    }
+    
+    .table tbody td {
+        padding: 15px;
+        border-bottom: 1px solid #e1e5e9;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        color: #ccc;
+        margin-bottom: 20px;
+    }
+    
+    .contact-count {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 20px;
+        display: inline-block;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+    
+    @@media (max-width: 768px) {
+        .container {
+            padding: 10px;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+        }
+        
+        .card {
+            padding: 20px;
+        }
+        
+        .table {
+            font-size: 0.9rem;
+        }
+        
+        .table thead th,
+        .table tbody td {
+            padding: 10px;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="header">
+        <h1>📞 Contact Manager</h1>
+        <p>Keep all your important contacts in one place</p>
+    </div>
+
+    <div class="card">
+        <h2>➕ Add New Contact</h2>
+        <form asp-action="SaveContact" method="post">
+            <div class="form-group">
+                <label for="Name">👤 Name:</label>
+                <input type="text" class="form-control" id="Name" name="Name" placeholder="Enter contact name" required>
+            </div>
+            <div class="form-group">
+                <label for="PhoneNumber">📱 Phone Number:</label>
+                <input type="tel" class="form-control" id="PhoneNumber" name="PhoneNumber" placeholder="Enter phone number" required>
+            </div>
+            <button type="submit" class="btn-primary">💾 Save Contact</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>📋 Saved Contacts</h2>
+        @if (Model != null && Model.Any())
+        {
+            <div class="contact-count">
+                📊 Total Contacts: @Model.Count
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>👤 Name</th>
+                        <th>📱 Phone Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var contact in Model)
+                {
+                    <tr>
+                        <td>@contact.Name</td>
+                        <td>@contact.PhoneNumber</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div>📭</div>
+                <h3>No contacts yet</h3>
+                <p>Add your first contact using the form above!</p>
+            </div>
+        }
+    </div>
+</div>
