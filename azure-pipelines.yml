@@ -1,0 +1,59 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  buildConfiguration: 'Release'
+  projectName: 'MyApp'  
+
+- stage: Build
+  displayName: "Build Application"
+  jobs:
+    - job: BuildJob
+      displayName: "Compile Code & Generate Artifacts"
+      steps:
+
+        # Install dependencies
+        - script: |
+            echo "Restoring Packages"
+            dotnet restore
+          displayName: 'Restore Dependencies'
+
+        # Build code
+        - script: |
+            dotnet build --configuration $(buildConfiguration)
+          displayName: 'Build Solution'
+
+        # Publish artifacts
+        - task: CopyFiles@2
+          inputs:
+            SourceFolder: '$(Build.SourcesDirectory)'
+            Contents: '**/*'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)'
+        
+        - task: PublishBuildArtifacts@1
+          inputs:
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+            ArtifactName: 'drop'
+
+# Stage 2 — Deploy (Optional)
+- stage: Deploy
+  displayName: "Deploy to Environment"
+  dependsOn: Build
+  condition: succeeded()  # Only run if build succeeds
+  jobs:
+    - deployment: DeployJob
+      environment: 'dev'  # Optional
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - script: echo "Deployment Started"
+                displayName: "Deploy App"
